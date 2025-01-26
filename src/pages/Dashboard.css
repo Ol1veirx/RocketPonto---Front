@@ -1,0 +1,250 @@
+:root {
+  --primary-color: #dc2626;
+  --background-light: #f9fafb;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.full-screen-dashboard {
+  display: flex;
+  height: 100vh;
+  background-color: var(--background-light);
+  font-family: 'Arial', sans-serif;
+}
+
+.dashboard-sidebar {
+  width: 250px;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.dashboard-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 30px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-item.active {
+  background-color: #fef3f3;
+  color: var(--primary-color);
+  border-right: 4px solid var(--primary-color);
+}
+
+.menu-item:hover {
+  background-color: #f9fafb;
+}
+
+.menu-item i {
+  margin-right: 15px;
+}
+
+.dashboard-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-time h1 {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.header-time p {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.punch-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.punch-button:hover {
+  background-color: #b91c1c;
+}
+
+.records-section {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.records-section h2 {
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.point-records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.point-record {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.record-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.point-record.completed .status-indicator {
+  background-color: #10b981;
+}
+
+.point-record.in-progress .status-indicator {
+  background-color: var(--primary-color);
+}
+
+.record-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.record-details strong {
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.record-details p {
+  color: var(--text-primary);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loading-spinner {
+  border: 4px solid var(--primary-color);
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 50px;
+}
+
+/* Previous CSS remains the same, add these new styles */
+.session-tracker {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-info h3 {
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.session-info p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.duration-display {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.duration-label {
+  color: var(--text-secondary);
+  margin-right: 10px;
+}
+
+.duration-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  background-color: #fef3f3;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
