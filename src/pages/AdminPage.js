@@ -4,7 +4,7 @@ import axios from 'axios';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 
-const Dashboard = () => {
+const AdminPage = () => {
   const [pointRecords, setPointRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -12,35 +12,7 @@ const Dashboard = () => {
   const [sessionDuration, setSessionDuration] = useState(null);
   const [userInitials, setUserInitials] = useState('');
   const [userRole, setUserRole] = useState('');
-  const [selectedMenu, setSelectedMenu] = useState('points');
   const navigate = useNavigate();
-
-  const baterPonto = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:8081/point-record/save',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      listarPontos();
-
-      const lastRecord = pointRecords[0];
-      if (lastRecord) {
-        if(!lastRecord.exitDateHour) {
-          setCurrentSession(new Date(lastRecord.entryDateHour));
-        } else {
-          setCurrentSession(new Date(lastRecord.exitDateHour));
-        }
-      }
-    } catch (error) {
-      alert('Erro ao bater o ponto.');
-    }
-  };
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -60,7 +32,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8081/point-record/list-by-user', {
+      const response = await axios.get('http://localhost:8081/point-record/get-all-point-records', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,19 +76,18 @@ const Dashboard = () => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodeToken = jwtDecode(token);
-      if (decodeToken.roles && decodeToken.roles.includes('ROLE_ADMIN')) {
+      if(decodeToken.roles && decodeToken.roles.includes('ROLE_ADMIN')) {
         setUserRole('ROLE_ADMIN');
       }
     }
-  }, []);
+  }, [])
 
-  const handleMenuClick = (menu) => {
-    setSelectedMenu(menu);
-    if (menu === 'admin') {
-      navigate('/admin');
-    } else if (menu === 'points') {
-      navigate('/dashboard');
-    }
+  const handleAdminClick = () => {
+    navigate('/admin');
+  }
+
+  const handleRecordPoints = () => {
+    navigate('/dashboard');
   }
 
   const formatDate = (dateString) => {
@@ -129,7 +100,7 @@ const Dashboard = () => {
       minute: '2-digit'
     });
   };
-
+  console.log(userRole)
   return (
     <div className="full-screen-dashboard">
       <div className="dashboard-sidebar">
@@ -137,32 +108,20 @@ const Dashboard = () => {
           <div className="logo">{userInitials}</div>
         </div>
         <nav className="dashboard-menu">
-          <button
-            className={`menu-item ${selectedMenu === 'points' ? 'active' : ''}`}
-            onClick={() => handleMenuClick('points')}
-          >
+          <button className="menu-item active" onClick={handleRecordPoints}>
             <i className="icon-clock"></i>
             Meus Pontos
           </button>
-          <button
-            className={`menu-item ${selectedMenu === 'agenda' ? 'active' : ''}`}
-            onClick={() => handleMenuClick('agenda')}
-          >
+          <button className="menu-item">
             <i className="icon-calendar"></i>
             Agenda
           </button>
-          <button
-            className={`menu-item ${selectedMenu === 'profile' ? 'active' : ''}`}
-            onClick={() => handleMenuClick('profile')}
-          >
+          <button className="menu-item">
             <i className="icon-user"></i>
             Perfil
           </button>
           {userRole === 'ROLE_ADMIN' && (
-            <button
-              className={`menu-item ${selectedMenu === 'admin' ? 'active' : ''}`}
-              onClick={() => handleMenuClick('admin')}
-            >
+            <button className="menu-item" onClick={handleAdminClick}>
               <i className="icon-settings"></i>
               Área do Admin
             </button>
@@ -204,13 +163,7 @@ const Dashboard = () => {
         )}
 
         <section className="records-section">
-        <button
-            onClick={baterPonto}
-            className="punch-button"
-          >
-            Bater Ponto
-          </button>
-          <h2>Registros de Ponto</h2>
+          <h2>Registros de Ponto dos Colaboradores</h2>
           {isLoading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -229,6 +182,10 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="record-details">
+                    <div className="detail-entry">
+                      <strong>Colaborador:</strong>
+                      <p>{record.nameUser}</p>
+                    </div>
                     <div className="detail-entry">
                       <strong>Entrada:</strong>
                       <p>{formatDate(record.entryDateHour)}</p>
@@ -260,4 +217,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AdminPage;
