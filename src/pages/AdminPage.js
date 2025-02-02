@@ -61,7 +61,7 @@ const AdminPage = () => {
     if (currentSession) {
       const interval = setInterval(() => {
         const now = new Date();
-        const duration = Math.floor((now - currentSession) / 1000); // Duration in seconds
+        const duration = Math.floor((now - currentSession) / 1000); 
         const hours = Math.floor(duration / 3600);
         const minutes = Math.floor((duration % 3600) / 60);
         const seconds = duration % 60;
@@ -111,14 +111,6 @@ const AdminPage = () => {
           <button className="menu-item active" onClick={handleRecordPoints}>
             <i className="icon-clock"></i>
             Meus Pontos
-          </button>
-          <button className="menu-item">
-            <i className="icon-calendar"></i>
-            Agenda
-          </button>
-          <button className="menu-item">
-            <i className="icon-user"></i>
-            Perfil
           </button>
           {userRole === 'ROLE_ADMIN' && (
             <button className="menu-item" onClick={handleAdminClick}>

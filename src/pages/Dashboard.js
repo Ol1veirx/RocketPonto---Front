@@ -27,34 +27,32 @@ const Dashboard = () => {
           },
         }
       );
-      listarPontos();
 
-      const lastRecord = pointRecords[0];
+      // Fetch updated records
+      const response = await axios.get('http://localhost:8081/point-record/list-by-user', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setPointRecords(response.data);
+
+      // Check the latest record's status
+      const lastRecord = response.data[0];
       if (lastRecord) {
-        if(!lastRecord.exitDateHour) {
-          setCurrentSession(new Date(lastRecord.entryDateHour));
+        if (lastRecord.exitDateHour) {
+          // If there's an exit time, clear the current session
+          setCurrentSession(null);
+          setSessionDuration(null);
         } else {
-          setCurrentSession(new Date(lastRecord.exitDateHour));
+          // If there's only an entry time, start the session timer
+          setCurrentSession(new Date(lastRecord.entryDateHour));
         }
       }
     } catch (error) {
       alert('Erro ao bater o ponto.');
     }
   };
-
-  useEffect(() => {
-    const username = localStorage.getItem('username');
-    if (username) {
-      const initials = username.split(' ').map((name) => name[0]).join('');
-      setUserInitials(initials.toUpperCase());
-    }
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    navigate('/');
-  }
 
   const listarPontos = async () => {
     try {
@@ -67,9 +65,17 @@ const Dashboard = () => {
       });
       setPointRecords(response.data);
 
+      // Check if there's an active session
       const lastRecord = response.data[0];
-      if (lastRecord && !lastRecord.exitDateHour) {
-        setCurrentSession(new Date(lastRecord.entryDateHour));
+      if (lastRecord) {
+        if (lastRecord.exitDateHour) {
+          // If there's an exit time, make sure no session is running
+          setCurrentSession(null);
+          setSessionDuration(null);
+        } else if (!lastRecord.exitDateHour) {
+          // If there's only an entry time, start the session timer
+          setCurrentSession(new Date(lastRecord.entryDateHour));
+        }
       }
 
       setIsLoading(false);
@@ -78,6 +84,27 @@ const Dashboard = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (currentSession) {
+      const interval = setInterval(() => {
+        const now = new Date();
+        const duration = Math.floor((now - currentSession) / 1000); // Duration in seconds
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+        const seconds = duration % 60;
+        setSessionDuration(`${hours}h ${minutes}m ${seconds}s`);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [currentSession]);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    navigate('/');
+  }
 
   useEffect(() => {
     listarPontos();
@@ -144,20 +171,6 @@ const Dashboard = () => {
             <i className="icon-clock"></i>
             Meus Pontos
           </button>
-          <button
-            className={`menu-item ${selectedMenu === 'agenda' ? 'active' : ''}`}
-            onClick={() => handleMenuClick('agenda')}
-          >
-            <i className="icon-calendar"></i>
-            Agenda
-          </button>
-          <button
-            className={`menu-item ${selectedMenu === 'profile' ? 'active' : ''}`}
-            onClick={() => handleMenuClick('profile')}
-          >
-            <i className="icon-user"></i>
-            Perfil
-          </button>
           {userRole === 'ROLE_ADMIN' && (
             <button
               className={`menu-item ${selectedMenu === 'admin' ? 'active' : ''}`}
@@ -190,18 +203,18 @@ const Dashboard = () => {
           </button>
         </header>
 
-        {currentSession && (
-          <div className="session-tracker">
-            <div className="session-info">
-              <h3>Sessão Atual</h3>
-              <p>Início: {formatDate(currentSession)}</p>
-              <div className="duration-display">
-                <span className="duration-label">Duração:</span>
-                <span className="duration-value">{sessionDuration}</span>
-              </div>
+        {currentSession && sessionDuration && (
+        <div className="session-tracker">
+          <div className="session-info">
+            <h3>Sessão Atual</h3>
+            <p>Início: {formatDate(currentSession)}</p>
+            <div className="duration-display">
+              <span className="duration-label">Duração:</span>
+              <span className="duration-value">{sessionDuration}</span>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         <section className="records-section">
         <button
