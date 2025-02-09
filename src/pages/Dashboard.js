@@ -18,6 +18,7 @@ const Dashboard = () => {
   const baterPonto = async () => {
     try {
       const token = localStorage.getItem('token');
+      setIsLoading(true);
       await axios.post(
         'https://rocketponto.onrender.com/point-record/save',
         {},
@@ -51,6 +52,8 @@ const Dashboard = () => {
       }
     } catch (error) {
       alert('Erro ao bater o ponto.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,21 +114,6 @@ const Dashboard = () => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    if (currentSession) {
-      const interval = setInterval(() => {
-        const now = new Date();
-        const duration = Math.floor((now - currentSession) / 1000); // Duration in seconds
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = duration % 60;
-        setSessionDuration(`${hours}h ${minutes}m ${seconds}s`);
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [currentSession]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -203,21 +191,8 @@ const Dashboard = () => {
           </button>
         </header>
 
-        {currentSession && sessionDuration && (
-        <div className="session-tracker">
-          <div className="session-info">
-            <h3>Sessão Atual</h3>
-            <p>Início: {formatDate(currentSession)}</p>
-            <div className="duration-display">
-              <span className="duration-label">Duração:</span>
-              <span className="duration-value">{sessionDuration}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
         <section className="records-section">
-        <button
+          <button
             onClick={baterPonto}
             className="punch-button"
           >
@@ -226,6 +201,7 @@ const Dashboard = () => {
           <h2>Registros de Ponto</h2>
           {isLoading ? (
             <div className="loading-container">
+              <p>Render está carregando, aguarde um momento...</p>
               <div className="loading-spinner"></div>
             </div>
           ) : pointRecords.length > 0 ? (

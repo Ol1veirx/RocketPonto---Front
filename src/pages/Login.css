@@ -57,3 +57,32 @@
 .login-container button:hover {
   background-color: #c51616;
 }
+
+.spinner {
+  border: 4px solid red;
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: auto;
+  color: red;
+  font-size: 16px;
+}
+
+.loading-message p {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
