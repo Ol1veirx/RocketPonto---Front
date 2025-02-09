@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8081/auth/login', { username, password });
+      const response = await axios.post('https://rocketponto.onrender.com/auth/login', { username, password });
       localStorage.setItem('token', response.data);
       localStorage.setItem('username', username);
       console.log(response.data);

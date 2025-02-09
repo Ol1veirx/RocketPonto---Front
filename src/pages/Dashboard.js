@@ -19,7 +19,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:8081/point-record/save',
+        'https://rocketponto.onrender.com/point-record/save',
         {},
         {
           headers: {
@@ -29,7 +29,7 @@ const Dashboard = () => {
       );
 
       // Fetch updated records
-      const response = await axios.get('http://localhost:8081/point-record/list-by-user', {
+      const response = await axios.get('https://rocketponto.onrender.com/point-record/list-by-user', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +58,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8081/point-record/list-by-user', {
+      const response = await axios.get('https://rocketponto.onrender.com/point-record/list-by-user', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
