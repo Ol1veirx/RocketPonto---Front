@@ -32,7 +32,7 @@ const AdminPage = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8081/point-record/get-all-point-records', {
+      const response = await axios.get('https://rocketponto.onrender.com/point-record/get-all-point-records', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
