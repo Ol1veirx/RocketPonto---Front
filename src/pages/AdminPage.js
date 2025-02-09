@@ -26,7 +26,7 @@ const AdminPage = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     navigate('/');
-  }
+  };
 
   const listarPontos = async () => {
     try {
@@ -61,7 +61,7 @@ const AdminPage = () => {
     if (currentSession) {
       const interval = setInterval(() => {
         const now = new Date();
-        const duration = Math.floor((now - currentSession) / 1000); 
+        const duration = Math.floor((now - currentSession) / 1000);
         const hours = Math.floor(duration / 3600);
         const minutes = Math.floor((duration % 3600) / 60);
         const seconds = duration % 60;
@@ -80,15 +80,15 @@ const AdminPage = () => {
         setUserRole('ROLE_ADMIN');
       }
     }
-  }, [])
+  }, []);
 
   const handleAdminClick = () => {
     navigate('/admin');
-  }
+  };
 
   const handleRecordPoints = () => {
     navigate('/dashboard');
-  }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -100,7 +100,35 @@ const AdminPage = () => {
       minute: '2-digit'
     });
   };
-  console.log(userRole)
+
+  // Função para verificar se o registro é do dia corrente
+  const isToday = (date) => {
+    const today = new Date();
+    return (
+      today.getDate() === new Date(date).getDate() &&
+      today.getMonth() === new Date(date).getMonth() &&
+      today.getFullYear() === new Date(date).getFullYear()
+    );
+  };
+
+  // Função para agrupar os registros por dia
+  const groupByDate = (records) => {
+    const todayRecords = [];
+    const pastRecords = [];
+
+    records.forEach(record => {
+      if (isToday(record.entryDateHour)) {
+        todayRecords.push(record);
+      } else {
+        pastRecords.push(record);
+      }
+    });
+
+    return { todayRecords, pastRecords };
+  };
+
+  const { todayRecords, pastRecords } = groupByDate(pointRecords);
+
   return (
     <div className="full-screen-dashboard">
       <div className="dashboard-sidebar">
@@ -133,10 +161,7 @@ const AdminPage = () => {
             <p>{currentTime.toLocaleTimeString('pt-BR')}</p>
           </div>
 
-          <button
-            onClick={logout}
-            className="punch-button"
-          >
+          <button onClick={logout} className="punch-button">
             Sair
           </button>
         </header>
@@ -161,43 +186,89 @@ const AdminPage = () => {
               <div className="loading-spinner"></div>
             </div>
           ) : pointRecords.length > 0 ? (
-            <div className="point-records-grid">
-              {pointRecords.map((record, index) => (
-                <div
-                  key={index}
-                  className={`point-record ${record.pointRecordStatus === "COMPLETED" ? 'completed' : 'in-progress'}`}
-                >
-                  <div className="record-header">
-                    <span className="status-indicator"></span>
-                    <span className="status-text">
-                      {record.pointRecordStatus === "COMPLETED" ? "Concluído" : "Em progresso"}
-                    </span>
-                  </div>
-                  <div className="record-details">
-                    <div className="detail-entry">
-                      <strong>Colaborador:</strong>
-                      <p>{record.nameUser}</p>
-                    </div>
-                    <div className="detail-entry">
-                      <strong>Entrada:</strong>
-                      <p>{formatDate(record.entryDateHour)}</p>
-                    </div>
-                    {record.exitDateHour && (
-                      <div className="detail-exit">
-                        <strong>Saída:</strong>
-                        <p>{formatDate(record.exitDateHour)}</p>
+            <>
+              {/* Registros de Hoje */}
+              {todayRecords.length > 0 && (
+                <div className="point-records-today">
+                  <h3>Hoje</h3>
+                  <div className="point-records-grid">
+                    {todayRecords.map((record, index) => (
+                      <div key={index} className={`point-record ${record.pointRecordStatus === "COMPLETED" ? 'completed' : 'in-progress'}`}>
+                        <div className="record-header">
+                          <span className="status-indicator"></span>
+                          <span className="status-text">
+                            {record.pointRecordStatus === "COMPLETED" ? "Concluído" : "Em progresso"}
+                          </span>
+                        </div>
+                        <div className="record-details">
+                          <div className="detail-entry">
+                            <strong>Colaborador:</strong>
+                            <p>{record.nameUser}</p>
+                          </div>
+                          <div className="detail-entry">
+                            <strong>Entrada:</strong>
+                            <p>{formatDate(record.entryDateHour)}</p>
+                          </div>
+                          {record.exitDateHour && (
+                            <div className="detail-exit">
+                              <strong>Saída:</strong>
+                              <p>{formatDate(record.exitDateHour)}</p>
+                            </div>
+                          )}
+                          {record.justification && (
+                            <div className="detail-justification">
+                              <strong>Justificativa:</strong>
+                              <p>{record.justification}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    )}
-                    {record.justification && (
-                      <div className="detail-justification">
-                        <strong>Justificativa:</strong>
-                        <p>{record.justification}</p>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+
+              {/* Registros de Outros Dias */}
+              {pastRecords.length > 0 && (
+                <div className="point-records-other-days">
+                  <h3>Outros Dias</h3>
+                  <div className="point-records-grid">
+                    {pastRecords.map((record, index) => (
+                      <div key={index} className={`point-record ${record.pointRecordStatus === "COMPLETED" ? 'completed' : 'in-progress'}`}>
+                        <div className="record-header">
+                          <span className="status-indicator"></span>
+                          <span className="status-text">
+                            {record.pointRecordStatus === "COMPLETED" ? "Concluído" : "Em progresso"}
+                          </span>
+                        </div>
+                        <div className="record-details">
+                          <div className="detail-entry">
+                            <strong>Colaborador:</strong>
+                            <p>{record.nameUser}</p>
+                          </div>
+                          <div className="detail-entry">
+                            <strong>Entrada:</strong>
+                            <p>{formatDate(record.entryDateHour)}</p>
+                          </div>
+                          {record.exitDateHour && (
+                            <div className="detail-exit">
+                              <strong>Saída:</strong>
+                              <p>{formatDate(record.exitDateHour)}</p>
+                            </div>
+                          )}
+                          {record.justification && (
+                            <div className="detail-justification">
+                              <strong>Justificativa:</strong>
+                              <p>{record.justification}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="empty-state">
               <p>Nenhum registro de ponto encontrado</p>
