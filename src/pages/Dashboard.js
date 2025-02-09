@@ -116,6 +116,14 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+      const initials = username.split(' ').map((name) => name[0]).join('');
+      setUserInitials(initials.toUpperCase());
+    }
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodeToken = jwtDecode(token);
