@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentSession, setCurrentSession] = useState(null);
+  const [description, setDescription] = useState('');
   const [sessionDuration, setSessionDuration] = useState(null);
   const [userInitials, setUserInitials] = useState('');
   const [userRole, setUserRole] = useState('');
@@ -21,7 +22,9 @@ const Dashboard = () => {
       setIsLoading(true);
       await axios.post(
         'https://rocketponto.onrender.com/point-record/save',
-        {},
+        {
+          description,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,7 +40,7 @@ const Dashboard = () => {
       });
 
       setPointRecords(response.data);
-
+      console.log(response.data)
       // Check the latest record's status
       const lastRecord = response.data[0];
       if (lastRecord) {
@@ -67,7 +70,7 @@ const Dashboard = () => {
         },
       });
       setPointRecords(response.data);
-
+      console.log(response.data);
       // Check if there's an active session
       const lastRecord = response.data[0];
       if (lastRecord) {
@@ -236,10 +239,19 @@ const Dashboard = () => {
                         <p>{formatDate(record.exitDateHour)}</p>
                       </div>
                     )}
-                    {record.justification && (
-                      <div className="detail-justification">
-                        <strong>Justificativa:</strong>
-                        <p>{record.justification}</p>
+                    {!record.description && record.pointRecordStatus === 'IN_PROGRESS' ? (
+                      <div className="area-description">
+                        <textarea
+                          type="text"
+                          placeholder="Descreva a atividade do dia"
+                          onChange={(e) => setDescription(e.target.value)}
+                          className="description-input"
+                        />
+                    </div>
+                    ) : (
+                      <div className="detail-description">
+                        <strong>Descrição:</strong>
+                        <p>{record.description}</p>
                       </div>
                     )}
                   </div>
