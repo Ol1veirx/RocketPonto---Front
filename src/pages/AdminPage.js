@@ -215,10 +215,10 @@ const AdminPage = () => {
                               <p>{formatDate(record.exitDateHour)}</p>
                             </div>
                           )}
-                          {record.justification && (
+                          {record.description && (
                             <div className="detail-justification">
-                              <strong>Justificativa:</strong>
-                              <p>{record.justification}</p>
+                              <strong>Descrição:</strong>
+                              <p>{record.description}</p>
                             </div>
                           )}
                         </div>
