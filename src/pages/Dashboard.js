@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import config from '../config/api';
 
 const Dashboard = () => {
   const [pointRecords, setPointRecords] = useState([]);
@@ -21,7 +22,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       setIsLoading(true);
       await axios.post(
-        'https://rocketponto.onrender.com/point-record/save',
+        `${config.apiUrlLocal}/point-record/save`,
         {
           description,
         },
@@ -33,7 +34,7 @@ const Dashboard = () => {
       );
 
       // Fetch updated records
-      const response = await axios.get('https://rocketponto.onrender.com/point-record/list-by-user', {
+      const response = await axios.get(`${config.apiUrlLocal}/point-record/list-by-user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,7 +65,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://rocketponto.onrender.com/point-record/list-by-user', {
+      const response = await axios.get(`${config.apiUrlLocal}/point-record/list-by-user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -212,7 +213,6 @@ const Dashboard = () => {
           <h2>Registros de Ponto</h2>
           {isLoading ? (
             <div className="loading-container">
-              <p>Render está carregando, aguarde um momento...</p>
               <div className="loading-spinner"></div>
             </div>
           ) : pointRecords.length > 0 ? (
