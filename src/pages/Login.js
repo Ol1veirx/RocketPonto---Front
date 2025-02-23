@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
+import config from '../config/api';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ const Login = () => {
     setIsLoading(true); // Iniciar o loading
 
     try {
-      const response = await axios.post('https://rocketponto.onrender.com/auth/login', { username, password });
+      const response = await axios.post(`${config.apiUrlLocal}/auth/login`, { username, password });
       localStorage.setItem('token', response.data);
       localStorage.setItem('username', username);
       console.log(response.data);
@@ -36,7 +37,6 @@ const Login = () => {
           <h2>Login</h2>
           {isLoading ? (
             <div className="loading-message">
-              <p>Render está carregando, aguarde um momento...</p>
               <div className="spinner"></div> {/* Adiciona o spinner */}
             </div>
           ) : (

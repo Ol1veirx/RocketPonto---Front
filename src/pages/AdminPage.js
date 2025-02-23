@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import config from '../config/api';
 
 const AdminPage = () => {
   const [pointRecords, setPointRecords] = useState([]);
@@ -32,7 +33,7 @@ const AdminPage = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://rocketponto.onrender.com/point-record/get-all-point-records', {
+      const response = await axios.get(`${config.apiUrlLocal}/point-record/get-all-point-records`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
