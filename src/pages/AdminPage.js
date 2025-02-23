@@ -33,7 +33,7 @@ const AdminPage = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${config.apiUrlLocal}/point-record/get-all-point-records`, {
+      const response = await axios.get(`${config.apiUrlProduction}/point-record/get-all-point-records`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

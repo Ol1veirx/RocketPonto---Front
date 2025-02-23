@@ -22,7 +22,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       setIsLoading(true);
       await axios.post(
-        `${config.apiUrlLocal}/point-record/save`,
+        `${config.apiUrlProduction}/point-record/save`,
         {
           description,
         },
@@ -34,7 +34,7 @@ const Dashboard = () => {
       );
 
       // Fetch updated records
-      const response = await axios.get(`${config.apiUrlLocal}/point-record/list-by-user`, {
+      const response = await axios.get(`${config.apiUrlProduction}/point-record/list-by-user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +65,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${config.apiUrlLocal}/point-record/list-by-user`, {
+      const response = await axios.get(`${config.apiUrlProduction}/point-record/list-by-user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
