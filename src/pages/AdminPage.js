@@ -9,8 +9,8 @@ const AdminPage = () => {
   const [pointRecords, setPointRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [currentSession, setCurrentSession] = useState(null);
-  const [sessionDuration, setSessionDuration] = useState(null);
+  //const [currentSession, setCurrentSession] = useState(null);
+  //const [sessionDuration, setSessionDuration] = useState(null);
   const [userInitials, setUserInitials] = useState('');
   const [userRole, setUserRole] = useState('');
   const navigate = useNavigate();
@@ -40,10 +40,12 @@ const AdminPage = () => {
       });
       setPointRecords(response.data);
 
-      const lastRecord = response.data[0];
+      //const lastRecord = response.data[0];
+      /*
       if (lastRecord && !lastRecord.exitDateHour) {
         setCurrentSession(new Date(lastRecord.entryDateHour));
       }
+      */
 
       setIsLoading(false);
     } catch (error) {
@@ -58,6 +60,7 @@ const AdminPage = () => {
     return () => clearInterval(timer);
   }, []);
 
+  /*
   useEffect(() => {
     if (currentSession) {
       const interval = setInterval(() => {
@@ -72,7 +75,7 @@ const AdminPage = () => {
       return () => clearInterval(interval);
     }
   }, [currentSession]);
-
+  */
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -167,7 +170,7 @@ const AdminPage = () => {
           </button>
         </header>
 
-        {currentSession && (
+        {/*currentSession && (
           <div className="session-tracker">
             <div className="session-info">
               <h3>Sessão Atual</h3>
@@ -178,7 +181,7 @@ const AdminPage = () => {
               </div>
             </div>
           </div>
-        )}
+        )*/}
 
         <section className="records-section">
           <h2>Registros de Ponto dos Colaboradores</h2>
@@ -257,10 +260,10 @@ const AdminPage = () => {
                               <p>{formatDate(record.exitDateHour)}</p>
                             </div>
                           )}
-                          {record.justification && (
+                          {record.description && (
                             <div className="detail-justification">
                               <strong>Justificativa:</strong>
-                              <p>{record.justification}</p>
+                              <p>{record.description}</p>
                             </div>
                           )}
                         </div>
