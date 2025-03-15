@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './Dashboard.css';
+import './AdminPage.css';
 import { useNavigate } from 'react-router-dom';
 import config from '../config/api';
 
@@ -9,10 +10,15 @@ const AdminPage = () => {
   const [pointRecords, setPointRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-  //const [currentSession, setCurrentSession] = useState(null);
-  //const [sessionDuration, setSessionDuration] = useState(null);
   const [userInitials, setUserInitials] = useState('');
   const [userRole, setUserRole] = useState('');
+
+  // Variáveis para paginação
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,15 +43,16 @@ const AdminPage = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page: currentPage,
+          size: pageSize
+        }
       });
-      setPointRecords(response.data);
 
-      //const lastRecord = response.data[0];
-      /*
-      if (lastRecord && !lastRecord.exitDateHour) {
-        setCurrentSession(new Date(lastRecord.entryDateHour));
-      }
-      */
+      // Atualiza os registros e informações de paginação
+      setPointRecords(response.data.content);
+      setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
 
       setIsLoading(false);
     } catch (error) {
@@ -58,24 +65,8 @@ const AdminPage = () => {
     listarPontos();
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [currentPage, pageSize]); // Executa quando a página ou tamanho da página mudar
 
-  /*
-  useEffect(() => {
-    if (currentSession) {
-      const interval = setInterval(() => {
-        const now = new Date();
-        const duration = Math.floor((now - currentSession) / 1000);
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = duration % 60;
-        setSessionDuration(`${hours}h ${minutes}m ${seconds}s`);
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [currentSession]);
-  */
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -92,6 +83,18 @@ const AdminPage = () => {
 
   const handleRecordPoints = () => {
     navigate('/dashboard');
+  };
+
+  // Funções para controlar a paginação
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handlePageSizeChange = (event) => {
+    setPageSize(parseInt(event.target.value));
+    setCurrentPage(0); // Volta para a primeira página quando mudar o tamanho
   };
 
   const formatDate = (dateString) => {
@@ -170,21 +173,30 @@ const AdminPage = () => {
           </button>
         </header>
 
-        {/*currentSession && (
-          <div className="session-tracker">
-            <div className="session-info">
-              <h3>Sessão Atual</h3>
-              <p>Início: {formatDate(currentSession)}</p>
-              <div className="duration-display">
-                <span className="duration-label">Duração:</span>
-                <span className="duration-value">{sessionDuration}</span>
-              </div>
-            </div>
-          </div>
-        )*/}
-
         <section className="records-section">
           <h2>Registros de Ponto dos Colaboradores</h2>
+
+          {/* Controles de paginação */}
+          <div className="pagination-controls">
+            <div className="page-size-selector">
+              <label htmlFor="pageSize">Itens por página:</label>
+              <select
+                id="pageSize"
+                value={pageSize}
+                onChange={handlePageSizeChange}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+
+            <div className="pagination-info">
+              Mostrando {pointRecords.length > 0 ? currentPage * pageSize + 1 : 0} - {Math.min((currentPage + 1) * pageSize, totalElements)} de {totalElements} registros
+            </div>
+          </div>
+
           {isLoading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -272,6 +284,54 @@ const AdminPage = () => {
                   </div>
                 </div>
               )}
+
+              {/* Controles de navegação entre páginas */}
+              <div className="pagination-navigation">
+                <button
+                  onClick={() => handlePageChange(0)}
+                  disabled={currentPage === 0}
+                  className="pagination-button"
+                >
+                  &laquo; Primeira
+                </button>
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}
+                  className="pagination-button"
+                >
+                  &lt; Anterior
+                </button>
+
+                <div className="pagination-pages">
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handlePageChange(i)}
+                      className={`pagination-page ${currentPage === i ? 'active' : ''}`}
+                    >
+                      {i + 1}
+                    </button>
+                  )).slice(
+                    Math.max(0, currentPage - 2),
+                    Math.min(totalPages, currentPage + 3)
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages - 1}
+                  className="pagination-button"
+                >
+                  Próxima &gt;
+                </button>
+                <button
+                  onClick={() => handlePageChange(totalPages - 1)}
+                  disabled={currentPage === totalPages - 1}
+                  className="pagination-button"
+                >
+                  Última &raquo;
+                </button>
+              </div>
             </>
           ) : (
             <div className="empty-state">
